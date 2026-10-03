@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Data</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        min-height: 100vh;
+        padding: 50px 20px;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 25px;
+      }
+
+      .form-box {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      input {
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        font-size: 15px;
+        transition: 0.3s;
+      }
+
+      input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 5px rgba(102, 126, 234, 0.4);
+      }
+
+      #inname {
+        width: 220px;
+      }
+
+      #inage {
+        width: 150px;
+      }
+
+      button {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        background: #667eea;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #4f63c4;
+        transform: translateY(-2px);
+      }
+
+      .hint {
+        text-align: center;
+        color: #888;
+        font-size: 13px;
+        margin: 20px 0 10px;
+      }
+
+      #root {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+
+      #root th {
+        background: #667eea;
+        color: white;
+        padding: 14px;
+        font-size: 16px;
+      }
+
+      #root td {
+        padding: 13px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        color: #444;
+      }
+
+      #root tr:not(:first-child) {
+        transition: 0.2s;
+        cursor: pointer;
+      }
+
+      #root tr:not(:first-child):hover {
+        background: #f1f3ff;
+      }
+
+      #root tr:last-child td {
+        border-bottom: none;
+      }
+      #toast {
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        background: #ef4444;
+        color: white;
+        padding: 14px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: 0.3s;
+        pointer-events: none;
+      }
+
+      #toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 25px 10px;
+        }
+
+        .container {
+          width: 100%;
+          padding: 25px 15px;
+        }
+
+        .form-box {
+          flex-direction: column;
+        }
+
+        #inname,
+        #inage,
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Student Data</h1>
+
+      <div class="form-box">
+        <input type="text" id="inname" placeholder="Enter your Name" />
+        <input type="number" id="inage" placeholder="Enter Your Age" />
+        <button onclick="add()">Add</button>
+      </div>
+
+      <p class="hint">Double-click a row to delete it</p>
+      <div id="toast"></div>
+
+      <table id="root"></table>
+    </div>
+
+    <script>
+      let data = [];
+      let root = document.getElementById("root");
+
+      let add = () => {
+        let inName = document.getElementById("inname").value.trim();
+        let inAge = document.getElementById("inage").value.trim();
+
+        if (inName === "" || inAge === "") {
+          showToast("Please enter both Name and Age");
+          return false;
+        }
+
+        data.push({ inName, inAge });
+        renderTable();
+
+        document.getElementById("inname").value = "";
+        document.getElementById("inage").value = "";
+      };
+
+      let generateElements = () => {
+        let addRow = document.createElement("tr");
+        let addCol1 = document.createElement("td");
+        let addCol2 = document.createElement("td");
+
+        return { addRow, addCol1, addCol2 };
+      };
+
+      let renderTable = () => {
+        root.innerHTML = "<tr><th>Name</th><th>Age</th></tr>";
+
+        for (let i of data) {
+          let { addRow, addCol1, addCol2 } = generateElements();
+
+          addCol1.innerText = i.inName;
+          addCol2.innerText = i.inAge;
+
+          addRow.appendChild(addCol1);
+          addRow.appendChild(addCol2);
+
+          addRow.addEventListener("dblclick", () => {
+            let index = data.indexOf(i);
+            data.splice(index, 1);
+            renderTable();
+          });
+
+          root.appendChild(addRow);
+        }
+      };
+      let showToast = (message) => {
+        let toast = document.getElementById("toast");
+
+        toast.innerText = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      };
+    </script>
+  </body>
+</html>
